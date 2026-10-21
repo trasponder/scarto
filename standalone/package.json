@@ -1,0 +1,16 @@
+{
+  "name": "scarto-multiplayer",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test ../tests/engine.test.mjs ../tests/rooms.test.mjs ../tests/difficulty.test.mjs ../tests/network.test.mjs"
+  },
+  "dependencies": {
+    "ws": "8.18.0"
+  }
+}

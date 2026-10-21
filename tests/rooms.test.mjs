@@ -1,0 +1,14 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {makeRoom,joinRoom,updateRoom,roomView,advanceRoom} from '../core/rooms.mjs';
+import {blankInput} from '../core/engine.mjs';
+const setup=()=>{const r=makeRoom('ABC234','host',1000);joinRoom(r,'guest',1000);return r;};
+test('rooms start waiting, enforce two seats and never expose session tokens',()=>{const r=makeRoom('ABC234','host',1000);assert.equal(r.status,'waiting');assert.equal(joinRoom(r,'guest',1000),1);assert.throws(()=>joinRoom(r,'third',1000),/completo/);assert.equal(roomView(r,0).tokens,undefined);});
+test('unauthorized tokens cannot move players, leave or request rematches',()=>{const r=setup();for(const action of ['sync','leave','rematch'])assert.throws(()=>updateRoom(r,'intruder',{action},1050),/appartiene/);});
+test('the server owns elapsed time and ignores client state',()=>{const r=setup();updateRoom(r,'host',{action:'sync',seq:1,input:blankInput(),tick:999999,state:{score:[5,0]}},1050);assert.equal(r.state.tick,3);assert.deepEqual(r.state.score,[0,0]);});
+test('stale sequences cannot overwrite fresh movement',()=>{const r=setup();updateRoom(r,'host',{action:'sync',seq:2,input:{...blankInput(),x:1}},1010);updateRoom(r,'host',{action:'sync',seq:1,input:{...blankInput(),x:-1}},1020);assert.equal(r.inputs[0].x,1);assert.equal(r.sequences[0],2);});
+test('lost movement input stops after 350 milliseconds',()=>{const r=setup();r.state.phase='playing';updateRoom(r,'host',{action:'sync',seq:1,input:{...blankInput(),x:1}},1000);advanceRoom(r,2000);assert.ok(r.state.players[0].x-370<85);});
+test('disconnection freezes the game; both heartbeats resume with a countdown',()=>{const r=setup();r.state.phase='playing';updateRoom(r,'host',{action:'sync'},10000);assert.equal(r.status,'disconnected');const tick=r.state.tick;updateRoom(r,'guest',{action:'sync'},10010);updateRoom(r,'host',{action:'sync'},10020);assert.equal(r.status,'connected');assert.equal(r.state.phase,'countdown');assert.equal(r.state.tick,tick);});
+test('rematch requires both votes and clears scores and echoes',()=>{const r=setup();r.state.phase='finished';r.state.score=[5,2];updateRoom(r,'host',{action:'rematch'},1050);assert.equal(r.state.phase,'finished');updateRoom(r,'guest',{action:'rematch'},1051);assert.equal(r.state.phase,'countdown');assert.deepEqual(r.state.score,[0,0]);assert.deepEqual(r.votes,[false,false]);});
+test('leaving closes the room for both seats',()=>{const r=setup();updateRoom(r,'guest',{action:'leave'},1050);assert.equal(roomView(r,0).status,'closed');const t=r.state.tick;advanceRoom(r,1300);assert.equal(r.state.tick,t);});
+test('requests arriving out of order cannot move the server clock backwards',()=>{const r=setup();advanceRoom(r,1200);const t=r.state.tick;advanceRoom(r,1100);assert.equal(r.wall,1200);advanceRoom(r,1200);assert.equal(r.state.tick,t);});

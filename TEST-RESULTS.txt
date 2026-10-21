@@ -1,0 +1,43 @@
+✔ lower difficulties have less accurate aim against the same target (1.149116ms)
+✔ difficulty changes decision-making without modifying either player or physics (1.054032ms)
+✔ an unknown saved difficulty safely uses normal decisions (0.193853ms)
+✔ Facile: completes a full match with its actual reaction interval (32.054027ms)
+✔ Normale: completes a full match with its actual reaction interval (13.279332ms)
+✔ Difficile: completes a full match with its actual reaction interval (12.511668ms)
+✔ easier levels give a stationary player more time before elimination (0.280304ms)
+✔ movement uses fixed 60 Hz; diagonals do not move faster (3.918775ms)
+✔ countdown consumes actions and prevents queued attacks (0.515539ms)
+✔ dash covers 220 units and creates one echo at the origin (0.795602ms)
+✔ echo starts exactly 120 ticks / 2 seconds after creation (2.95229ms)
+✔ swap exchanges both positions and preserves direction, clock and cooldown (4.478967ms)
+✔ swap is unavailable once the echo has fired (1.050157ms)
+✔ dash cooldown is exactly 3 seconds (3.418995ms)
+✔ fast dash hits without tunnelling and cannot hit twice (1.138239ms)
+✔ simultaneous dashes clash symmetrically (1.851788ms)
+✔ echo can hit a rival independently of its owner (1.017518ms)
+✔ a ring-out scores once, resets temporary states, and starts the next round (1.487948ms)
+✔ simultaneous ring-outs award no points (0.218159ms)
+✔ first to five wins and finished games never score again (0.498173ms)
+✔ replayed input counters cannot create duplicate attacks or swaps (3.36243ms)
+✔ untrusted input is bounded and non-finite values are rejected (0.204078ms)
+✔ deterministic simulation produces identical state for identical inputs (36.921526ms)
+✔ the bot can win a complete match against a stationary opponent (9.940532ms)
+Verified 514 identical snapshots across two independent WebSocket clients.
+✔ two real WebSocket clients: echo, swap, same snapshots, five rounds and rematch (24973.231482ms)
+✔ rooms start waiting, enforce two seats and never expose session tokens (1.726558ms)
+✔ unauthorized tokens cannot move players, leave or request rematches (0.25825ms)
+✔ the server owns elapsed time and ignores client state (1.155576ms)
+✔ stale sequences cannot overwrite fresh movement (0.20528ms)
+✔ lost movement input stops after 350 milliseconds (1.098469ms)
+✔ disconnection freezes the game; both heartbeats resume with a countdown (0.155895ms)
+✔ rematch requires both votes and clears scores and echoes (0.148064ms)
+✔ leaving closes the room for both seats (0.12544ms)
+✔ requests arriving out of order cannot move the server clock backwards (2.301046ms)
+ℹ tests 34
+ℹ suites 0
+ℹ pass 34
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 25100.189738
